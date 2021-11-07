@@ -2,16 +2,6 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 
-// class Square extends React.Component {
-// 	render() {
-// 		return (
-// 			<button className='square' onClick={() => this.props.onClick()}>
-// 				{this.props.value}
-// 			</button>
-// 		)
-// 	}
-// }
-
 function Square(props) {
 	return (
 		<button className='square' onClick={props.onClick}>
@@ -19,16 +9,7 @@ function Square(props) {
 		</button>
 	)
 }
-
 class Board extends React.Component {
-	// constructor(props) {
-	// 	super(props)
-	// 	this.state = {
-	// 		squares: Array(9).fill(null),
-	// 		xIsNext: true,
-	// 	}
-	// }
-
 	renderSquare(i) {
 		return (
 			<Square
@@ -65,13 +46,18 @@ class Game extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			history: [{ squares: Array(9).fill(null) }],
+			history: [
+				{
+					squares: Array(9).fill(null),
+				},
+			],
+			stepNumber: 0,
 			xIsNext: true,
 		}
 	}
 
 	handleClick(i) {
-		const history = this.state.history
+		const history = this.state.history.slice(0, this.state.stepNumber + 1)
 		const current = history[history.length - 1]
 		const squares = current.squares.slice()
 		if (calculateWinner(squares) || squares[i]) {
@@ -84,7 +70,7 @@ class Game extends React.Component {
 					squares: squares,
 				},
 			]),
-			stepNumber: 0,
+			stepNumber: history.length,
 			xIsNext: !this.state.xIsNext,
 		})
 	}
@@ -98,7 +84,7 @@ class Game extends React.Component {
 
 	render() {
 		const history = this.state.history
-		const current = history[history.length - 1]
+		const current = history[this.state.stepNumber]
 		const winner = calculateWinner(current.squares)
 
 		const moves = history.map((step, move) => {
@@ -112,9 +98,9 @@ class Game extends React.Component {
 
 		let status
 		if (winner) {
-			status = winner + ' won'
+			status = 'Winner: ' + winner + '!'
 		} else {
-			status = 'Next step: ' + (this.state.xIsNext ? 'X' : 'O')
+			status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
 		}
 
 		return (
